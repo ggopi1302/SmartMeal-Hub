@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Shopping List | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Title Section -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-success mb-2">
+      <i class="fas fa-shopping-basket me-2"></i> Grocery Shopping List
+    </h2>
+    <p class="text-muted">
+      <i class="fas fa-calendar-alt me-1"></i> Generated for your weekly meal plan
+    </p>
+  </div>
+
+  <!-- Shopping List Card -->
+  <div class="card border-0 shadow-sm rounded-4 mb-5">
+    <div class="card-header bg-success text-white fw-bold rounded-top-4">
+      <i class="fas fa-utensils me-2"></i> Grocery Items
+    </div>
+
+    <div class="card-body p-0">
+      <table class="table align-middle table-hover mb-0">
+        <thead class="bg-light">
+          <tr class="text-success fw-semibold">
+            <th style="width: 5%; text-align: center;"><i class="fas fa-hashtag me-2"></i>S.No</th>
+            <th style="width: 8%; text-align: center;"><i class="fas fa-check-circle me-2"></i>Done</th>
+            <th><i class="fas fa-leaf me-2"></i>Item</th>
+            <th><i class="fas fa-sort-numeric-up me-2"></i>Quantity</th>
+            <th><i class="fas fa-dollar-sign me-2"></i>Base Price</th>
+            <th><i class="fas fa-wallet me-2"></i>Total Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in shopping_list.items.all %}
+          <tr>
+            <td class="text-center fw-bold text-muted">{{ forloop.counter }}</td>
+            <td class="text-center">
+                <input type="checkbox" class="form-check-input toggle-item"
+                    data-id="{{ i.id }}" {% if i.is_purchased %}checked{% endif %}>
+            </td>
+            <td class="fw-semibold text-capitalize">
+              <i class="fas fa-shopping-cart text-success me-2"></i>{{ i.item.name }}
+            </td>
+            <td>{{ i.quantity }}</td>
+            <td>${{ i.item.base_price|floatformat:2 }}</td>
+            <td class="fw-bold text-success">${{ i.cost|floatformat:2 }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-4 text-muted">
+              <i class="fas fa-exclamation-circle me-2"></i>No items found in your shopping list.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="bg-light">
+          <tr>
+            <td colspan="4" class="text-end fw-bold text-secondary">Total Cost:</td>
+            <td class="fw-bold text-success fs-5">${{ shopping_list.total_cost|floatformat:2 }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Outlet Comparison -->
+  <div class="card border-0 shadow-sm rounded-4 mb-5">
+    <div class="card-header bg-success text-white fw-bold rounded-top-4">
+      <i class="fas fa-store-alt me-2"></i> Compare Prices by Outlet
+    </div>
+    <div class="card-body">
+      <div class="row">
+        {% for o in outlet_comparisons %}
+        <div class="col-md-4 mb-3">
+          <div class="border rounded-3 p-3 h-100 d-flex justify-content-between align-items-center shadow-sm outlet-card">
+            <div>
+              <h6 class="mb-1 text-success fw-bold"><i class="fas fa-store me-2"></i>{{ o.outlet }}</h6>
+              <small class="text-muted">Estimated weekly total</small>
+            </div>
+            <span class="badge bg-success fs-6 px-3 py-2">
+              <i class="fas fa-dollar-sign me-1"></i>{{ o.total|floatformat:2 }}
+            </span>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted mb-0">
+          <i class="fas fa-info-circle me-2"></i>No outlet comparisons available.
+        </p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="text-center">
+    <a href="{% url 'meal:plan' %}" class="btn btn-outline-success rounded-pill px-4 py-2 me-2">
+      <i class="fas fa-arrow-left me-2"></i>Back to My Meal Plan
+    </a>
+  </div>
+</div>
+
+<!-- Styles -->
+<style>
+  .table thead th {
+    border-top: none;
+  }
+  .table th, .table td {
+    vertical-align: middle;
+  }
+  .outlet-card {
+    transition: all 0.2s ease-in-out;
+  }
+  .outlet-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+  }
+  .card-header {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+  }
+  .btn-outline-success:hover {
+    background-color: #198754;
+    color: white !important;
+  }
+  .badge {
+    font-size: 0.9rem;
+  }
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll(".toggle-item").forEach(chk => {
+    chk.addEventListener("change", function() {
+      const row = this.closest("tr");
+
+      fetch(`/grocery/toggle-item/${this.dataset.id}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"), // include CSRF
+        },
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === "ok") {
+          if (data.purchased) {
+            row.classList.add("table-success");
+          } else {
+            row.classList.remove("table-success");
+          }
+        }
+      })
+      .catch(err => console.error("Error updating item:", err));
+    });
+  });
+
+  // Helper function to get CSRF token
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+});
+</script>
+{% endblock %}

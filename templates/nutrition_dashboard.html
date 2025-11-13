@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Nutrition Tracking | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  
+  <!-- Page Title -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-success mb-2">
+      <i class="fas fa-apple-alt me-2"></i> Daily Nutrition Tracker
+    </h2>
+    <p class="text-muted">Track your calories & macros for a healthier lifestyle.</p>
+  </div>
+
+  <!-- Daily Goal Cards -->
+  <div class="row g-4 mb-5 justify-content-center">
+    <div class="col-md-3">
+      <div class="mini-card text-center shadow-sm rounded-4 p-4 border-0">
+        <i class="fas fa-fire text-danger mb-2 fs-3"></i>
+        <h4 class="fw-bold">{{ goal.daily_calorie_goal }}</h4>
+        <p class="text-muted mb-0">Daily Calories</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="mini-card text-center shadow-sm rounded-4 p-4 border-0">
+        <i class="fas fa-drumstick-bite text-primary mb-2 fs-3"></i>
+        <h4 class="fw-bold">{{ goal.daily_protein_goal }} g</h4>
+        <p class="text-muted mb-0">Protein Goal</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="mini-card text-center shadow-sm rounded-4 p-4 border-0">
+        <i class="fas fa-bread-slice text-warning mb-2 fs-3"></i>
+        <h4 class="fw-bold">{{ goal.daily_carbs_goal }} g</h4>
+        <p class="text-muted mb-0">Carbs Goal</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="mini-card text-center shadow-sm rounded-4 p-4 border-0">
+        <i class="fas fa-cheese text-success mb-2 fs-3"></i>
+        <h4 class="fw-bold">{{ goal.daily_fats_goal }} g</h4>
+        <p class="text-muted mb-0">Fats Goal</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Today's Summary -->
+  <div class="card shadow-sm rounded-4 border-0 p-4 mb-5">
+    <h5 class="fw-bold text-success mb-4">
+      <i class="fas fa-chart-pie me-2"></i> Today's Progress
+    </h5>
+
+    <div class="row text-center g-4">
+      <div class="col-md-3">
+        <div class="summary-box rounded-4 p-3">
+          <h4 class="text-success fw-bold mb-1">{{ totals.total_calories|floatformat:0 }}</h4>
+          <p class="text-muted small">Calories</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="summary-box rounded-4 p-3">
+          <h4 class="text-primary fw-bold mb-1">{{ totals.total_protein|floatformat:1 }}</h4>
+          <p class="text-muted small">Protein (g)</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="summary-box rounded-4 p-3">
+          <h4 class="text-warning fw-bold mb-1">{{ totals.total_carbs|floatformat:1 }}</h4>
+          <p class="text-muted small">Carbs (g)</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="summary-box rounded-4 p-3">
+          <h4 class="text-danger fw-bold mb-1">{{ totals.total_fats|floatformat:1 }}</h4>
+          <p class="text-muted small">Fats (g)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logged Meals -->
+  <div class="card shadow-sm rounded-4 border-0 p-4">
+    <h5 class="fw-bold text-success mb-3">
+      <i class="fas fa-list-alt me-2"></i> Meals Logged Today
+    </h5>
+
+    {% if logs %}
+      <table class="table table-striped align-middle rounded-4 overflow-hidden">
+        <thead class="table-success text-dark">
+          <tr>
+            <th>Meal</th>
+            <th>Calories</th>
+            <th>Protein (g)</th>
+            <th>Carbs (g)</th>
+            <th>Fats (g)</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td class="fw-semibold">{{ log.meal.name }}</td>
+            <td>{{ log.calories }}</td>
+            <td>{{ log.protein }}</td>
+            <td>{{ log.carbs }}</td>
+            <td>{{ log.fats }}</td>
+            <!-- Delete Button -->
+            <td class="text-center">
+                <a href="{% url 'nutrition:delete_log' log.id %}"
+                class="btn btn-sm btn-danger rounded-pill px-3"
+                onclick="return confirm('Remove this meal from your log?');">
+                <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-center text-muted py-4">
+        <i class="fas fa-info-circle me-1"></i>No meals logged yet.
+      </p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Styles -->
+<style>
+  .mini-card {
+    background: #ffffff;
+    transition: transform .2s;
+  }
+  .mini-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 128, 0, 0.15);
+  }
+  .summary-box {
+    background: #f8fdf8;
+    border: 1px solid #e4f7e4;
+  }
+  table thead th {
+    border: none;
+  }
+</style>
+
+{% endblock %}

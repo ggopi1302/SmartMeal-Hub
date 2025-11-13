@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Register | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="col-12 col-md-8 col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-5">
+        <h3 class="text-center mb-3 text-success fw-bold">
+          <i class="fas fa-user-plus me-2"></i> Create Your Account
+        </h3>
+
+        <p class="text-center text-muted mb-4">
+          Plan your meals, track calories, and shop smart on a budget! 
+          Choose your preferences to get a personalized experience.
+        </p>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} py-2">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Username -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-user me-1"></i> Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+          </div>
+
+          <!-- Full Name -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-id-badge me-1"></i> Full Name</label>
+            <input type="text" name="full_name" class="form-control" placeholder="Enter your full name" required>
+          </div>
+
+          <!-- University Name -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-school me-1"></i> University Name</label>
+            <input type="text" name="university_name" class="form-control" placeholder="Enter your university" required>
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-envelope me-1"></i> University Email</label>
+            <input type="email" name="email" class="form-control" placeholder="example@university.edu" required>
+          </div>
+
+          <!-- Passwords -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold"><i class="fas fa-lock me-1"></i> Password</label>
+              <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold"><i class="fas fa-lock me-1"></i> Confirm Password</label>
+              <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password" required>
+            </div>
+          </div>
+
+          <!-- Gender & Age -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold"><i class="fas fa-venus-mars me-1"></i> Gender</label>
+              <select name="gender" class="form-select">
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold"><i class="fas fa-calendar-alt me-1"></i> Age</label>
+              <input type="number" name="age" class="form-control" min="15" max="100" placeholder="Your age">
+            </div>
+          </div>
+
+          <!-- Student ID -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-id-card me-1"></i> Student ID</label>
+            <input type="text" name="student_id" class="form-control" placeholder="Enter your student ID" required>
+          </div>
+
+          <!-- Profile Picture -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-image me-1"></i> Profile Picture</label>
+            <input type="file" name="profile_picture" class="form-control">
+          </div>
+
+          <!-- Submit -->
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-success fw-semibold">
+              <i class="fas fa-user-check me-1"></i> Register
+            </button>
+          </div>
+
+          <p class="text-center small">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-decoration-none text-success fw-semibold">Login here</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

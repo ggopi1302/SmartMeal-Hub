@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Meal Plan | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center text-success fw-bold mb-4">
+    <i class="fas fa-calendar-check me-2"></i> My Weekly Meal Plan
+  </h2>
+  <p class="text-muted text-center mb-5">
+    Your personalized weekly meal plan — balanced, delicious, and tailored to your preferences.
+  </p>
+
+  <!-- ===== USER SUMMARY ===== -->
+  {% if user_info %}
+  <div class="card shadow-sm border-0 rounded-4 p-4 mb-5">
+    <h5 class="fw-bold text-success mb-3">
+      <i class="fas fa-user-circle me-2"></i>Your Preferences Summary
+    </h5>
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Health Goal:</strong> {{ user_info.goal|default:"-"|title }}</p>
+        <p><strong>Meal Frequency:</strong>
+          {% if user_info.meal_frequency == "3_meals" %}3 Meals a Day
+          {% elif user_info.meal_frequency == "5_meals" %}5 Small Meals a Day
+          {% else %}-{% endif %}
+        </p>
+          <p><strong><i class="fas fa-utensils me-1 text-success"></i> Food Preference:</strong> {{ user_info.food_preference|title|default:"-" }}</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Weekly Budget:</strong> ${{ user_info.weekly_budget_limit|default:"0.00" }}</p>
+        <p><strong>Max Calories/Meal:</strong> {{ user_info.max_calories|default:"-" }} kcal</p>
+      </div>
+    </div>
+    {% if user_info.notes %}
+      <p class="text-warning mt-2"><em>Notes: {{ user_info.notes }}</em></p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ===== MEAL PLAN BY DAY ===== -->
+  {% if plan and grouped_meals %}
+    {% for day, meals in grouped_meals.items %}
+      {% if meals %}
+      <div class="mb-5">
+        <h4 class="text-success fw-bold text-capitalize mb-3">
+          <i class="fas fa-calendar-day me-2"></i>{{ day }}
+        </h4>
+        <div class="row g-4">
+          {% for item in meals %}
+            <div class="col-md-4">
+              <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <!-- Meal Image -->
+                {% if item.meal.image_url %}
+                  <img src="{{ item.meal.image_url }}" class="card-img-top" alt="{{ item.meal.name }}" style="height:200px; object-fit:cover;">
+                {% else %}
+                  <img src="{% static 'img/default_meal.jpg' %}" class="card-img-top" alt="{{ item.meal.name }}" style="height:200px; object-fit:cover;">
+                {% endif %}
+
+                <!-- Meal Info -->
+                <div class="card-body">
+                  <h5 class="card-title fw-bold">{{ item.meal.name }}</h5>
+
+                  {% if item.meal.category or item.meal.area %}
+                    <p class="text-muted small mb-2">
+                      {% if item.meal.category %}
+                        <span class="badge bg-success text-white me-1">{{ item.meal.category }}</span>
+                      {% endif %}
+                      {% if item.meal.area %}
+                        <span class="badge bg-info text-white">{{ item.meal.area }}</span>
+                      {% endif %}
+                    </p>
+                  {% endif %}
+
+                  {% if item.meal.tags %}
+                    <p class="small text-secondary mb-2">
+                      <i class="fas fa-tags me-1 text-success"></i>{{ item.meal.tags }}
+                    </p>
+                  {% endif %}
+
+                  <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-success">🔥 {{ item.meal.calories }} kcal</span>
+                    {% if item.meal.protein %}
+                      <span class="badge bg-primary">🥩 {{ item.meal.protein }}g Protein</span>
+                    {% endif %}
+                    {% if item.meal.carbs %}
+                      <span class="badge bg-warning text-dark">🍚 {{ item.meal.carbs }}g Carbs</span>
+                    {% endif %}
+                    {% if item.meal.fats %}
+                      <span class="badge bg-danger">🥑 {{ item.meal.fats }}g Fats</span>
+                    {% endif %}
+                  </div>
+
+                  <p class="text-muted small mb-2">
+                    <strong>Cooking Time:</strong> {{ item.meal.cooking_time }} mins
+                  </p>
+
+                  {% if item.notes %}
+                    <p class="text-warning small"><em>Note: {{ item.notes }}</em></p>
+                  {% endif %}
+
+                </div>
+
+                <!-- Expandable Details -->
+                <div class="card-footer bg-white border-0">
+                  
+                <!-- ADD TO TRACKER BUTTON (Correct Place) -->
+                  <div class="d-flex gap-2 mt-3">
+                      
+                      <!-- Add to Tracker -->
+                      <a href="{% url 'nutrition:add_to_nutrition_log' item.meal.id %}" 
+                        class="btn btn-sm btn-outline-success flex-fill rounded-pill">
+                          <i class="fas fa-plus-circle me-1"></i> Track
+                      </a>
+
+                      <!-- Expand Details -->
+                      <a class="btn btn-sm btn-outline-primary flex-fill rounded-pill"
+                        data-bs-toggle="collapse"
+                        href="#mealDetails{{ item.id }}"
+                        role="button"
+                        aria-expanded="false"
+                        aria-controls="mealDetails{{ item.id }}">
+                          <i class="fas fa-info-circle me-1"></i> Details
+                      </a>
+                  </div>
+
+                  <div class="collapse mt-2" id="mealDetails{{ item.id }}">
+                    <div class="p-3 bg-light rounded small">
+                      <h6 class="fw-bold">Ingredients:</h6>
+                      <p class="mb-2">{{ item.meal.ingredients|default:"No ingredients available." }}</p>
+                      <h6 class="fw-bold">Instructions:</h6>
+                      <p>{{ item.meal.instructions|default:"No instructions provided." }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+
+    <!-- ===== WEEKLY SUMMARY ===== -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-5">
+      <h5 class="fw-bold text-success mb-3">
+        <i class="fas fa-chart-pie me-2"></i> Weekly Summary
+      </h5>
+      <p class="text-muted mb-1"><strong>Total Calories:</strong> {{ plan.total_calories }} kcal</p>
+      <p class="text-muted mb-1"><strong>Total Budget Used:</strong> ${{ plan.total_budget }}</p>
+      {% if plan.goal %}
+        <p class="text-muted mb-1"><strong>Goal:</strong> {{ plan.goal|title }}</p>
+      {% endif %}
+    </div>
+
+    <!-- ===== ACTION BUTTON ===== -->
+    <div class="text-center">
+      <a href="{% url 'meal:quiz' %}" class="btn btn-outline-success btn-lg rounded-pill">
+        <i class="fas fa-edit me-2"></i> Update Preferences
+      </a>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{% url 'grocery:generate_from_plan' plan.id %}" class="btn btn-success rounded-pill">
+        🛒 Generate Grocery List
+      </a>
+    </div>
+
+  {% else %}
+    <p class="text-center text-muted">
+      No meal plan generated yet. Please
+      <a href="{% url 'meal:quiz' %}" class="text-success fw-semibold">take the quiz</a>
+      to generate your personalized meal plan.
+    </p>
+  {% endif %}
+</div>
+
+<!-- ===== STYLES ===== -->
+<style>
+  .btn-outline-success:hover {
+    background-color: #198754;
+    color: #fff !important;
+  }
+  .badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.6em;
+  }
+  .card {
+    transition: transform 0.2s ease-in-out;
+  }
+</style>
+{% endblock %}

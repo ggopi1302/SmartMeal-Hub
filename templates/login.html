@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-5">
+        
+        <!-- Title -->
+        <h3 class="text-center mb-3 text-success fw-bold">
+          <i class="fas fa-sign-in-alt me-2"></i> Login
+        </h3>
+
+        <!-- Informative text -->
+        <p class="text-center text-muted mb-4">
+          Welcome back! Login with your username and password to access your personalized meal plans.
+          Track your dietary preferences, calories, and shop smartly on a budget.
+        </p>
+
+        <!-- Messages -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} py-2">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Login Form -->
+        <form method="POST">
+          {% csrf_token %}
+
+          <!-- Username -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-user me-1"></i> Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="fas fa-lock me-1"></i> Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-success fw-semibold">
+              <i class="fas fa-sign-in-alt me-1"></i> Login
+            </button>
+          </div>
+
+          <p class="text-center small">
+            Don't have an account? 
+            <a href="{% url 'register' %}" class="text-decoration-none text-success fw-semibold">Register here</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

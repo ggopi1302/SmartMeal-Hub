@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Meal Preference Quiz | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+          <h2 class="text-center text-success fw-bold mb-3">
+            <i class="fas fa-seedling me-2"></i> Meal Preference Quiz
+          </h2>
+          <p class="text-muted text-center mb-4">
+            Tell us about your goals and preferences — we’ll craft a weekly meal plan just for you.
+          </p>
+
+          <form method="post" action="{% url 'meal:quiz' %}" class="needs-validation" novalidate>
+            {% csrf_token %}
+
+            <!-- Weekly Budget -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Weekly Budget Limit ($)</label>
+              <input type="number" name="weekly_budget_limit" min="0" step="0.01"
+                    class="form-control form-control-lg border-success rounded-pill"
+                    placeholder="Enter your weekly budget" required>
+            </div>
+
+            <!-- Meal Frequency -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Meal Frequency</label>
+              <select name="meal_frequency" class="form-select form-select-lg border-success rounded-pill" required>
+                <option value="3_meals">3 Meals a Day</option>
+                <option value="5_meals">5 Small Meals a Day</option>
+              </select>
+            </div>
+
+            <!-- Health Goal -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Health Goal</label>
+              <select name="goal" class="form-select form-select-lg border-success rounded-pill">
+                <option value="general_health">General Health</option>
+                <option value="weight_loss">Weight Loss</option>
+                <option value="muscle_gain">Muscle Gain</option>
+                <option value="maintain_weight">Maintain Weight</option>
+              </select>
+            </div>
+
+            <!-- Max Calories -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Maximum Calories per Meal</label>
+              <input type="number" name="max_calories"
+                     class="form-control form-control-lg border-success rounded-pill"
+                     placeholder="e.g., 600" min="100" max="1500">
+            </div>
+
+            <!-- Food Preferences -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Food Preference</label>
+              <select name="food_preference" class="form-select form-select-lg border-success rounded-pill" required>
+                <option value="omnivore">Omnivore (All Foods)</option>
+                <option value="meat_lover">Meat Lover</option>
+                <option value="pescatarian">Pescatarian</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="high_protein">High Protein / Gym Diet</option>
+                <option value="light_meals">Breakfast & Light Meals</option>
+                <option value="sweet_tooth">Sweet Tooth / Dessert Lover</option>
+              </select>
+            </div>
+
+            <!-- Notes -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Allergies or Notes</label>
+              <textarea name="notes" rows="3"
+                        class="form-control border-success rounded-4"
+                        placeholder="e.g., avoid peanuts, low-sodium meals, etc."></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-success btn-lg rounded-pill px-5">
+                <i class="fas fa-utensils me-2"></i> Generate My Plan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background-color: #fff;
+  }
+  .btn-success:hover {
+    background-color: #198754 !important;
+    transform: scale(1.03);
+    transition: 0.2s ease-in-out;
+  }
+  select, input, textarea {
+    box-shadow: none !important;
+  }
+</style>
+{% endblock %}
