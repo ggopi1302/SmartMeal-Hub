@@ -54,76 +54,113 @@
 
 <body class="d-flex flex-column min-vh-100" style="background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);">
 
-  <!-- ==================== Navbar ==================== -->
-  <nav class="navbar navbar-expand-lg navbar-light sticky-top">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-        <i class="fas fa-utensils me-2"></i>Smart Meal Planner
-      </a>
+<!-- ==================== Navbar ==================== -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+  <div class="container">
+    
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold" href="{% url 'accounts:home' %}">
+      <i class="fa-solid fa-bowl-food me-2"></i> Smart Meal Planner
+    </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
 
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
-              Home
-            </a>
-          </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+            href="{% url 'accounts:home' %}">
+            <i class="fa-solid fa-house me-1"></i> Home
+          </a>
+        </li>
 
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'meal:quiz' %}active{% endif %}" href="{% url 'meal:quiz' %}">
-              Quiz
-            </a>
-          </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'meal:quiz' %}active{% endif %}"
+             href="{% url 'meal:quiz' %}">
+            <i class="fa-solid fa-clipboard-question me-1"></i> Quiz
+          </a>
+        </li>
 
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'meal:plan' %}active{% endif %}" href="{% url 'meal:plan' %}">
-              My Plan
-            </a>
-          </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'meal:plan' %}active{% endif %}"
+             href="{% url 'meal:plan' %}">
+            <i class="fa-solid fa-calendar-check me-1"></i> My Plan
+          </a>
+        </li>
 
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="#">
-              Contact
-            </a>
-          </li>
+        <!-- ==================== Leftover Management ==================== -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if 'leftovers' in request.path %}active{% endif %}"
+             href="#" id="leftoverDropdown" role="button"
+             data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-recycle me-1"></i> Leftovers
+          </a>
 
-          {% if user.is_authenticated %}
-            <!-- Logged-in user dropdown -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle fw-semibold text-success" href="#" id="userDropdown"
-                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="{% url 'leftovers:input' %}">
+                <i class="fa-solid fa-pen-to-square me-2 text-success"></i> Add Leftovers
               </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
-                  <i class="fas fa-sign-out-alt me-1"></i>Logout</a>
-                </li>
-              </ul>
             </li>
-          {% else %}
-            <!-- Login/Sign-up Buttons -->
-            <li class="nav-item ms-lg-3">
-              <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm me-2 px-3">Login</a>
+            <li>
+              <a class="dropdown-item" href="{% url 'leftovers:recommend' %}">
+                <i class="fa-solid fa-utensils me-2 text-primary"></i> Recommended Meals
+              </a>
             </li>
-            <li class="nav-item">
-              <a href="{% url 'register' %}" class="btn btn-success btn-sm px-3">Sign Up</a>
+          </ul>
+        </li>
+        <!-- ============================================================= -->
+
+        {% if user.is_authenticated %}
+        <!-- User Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle fw-semibold text-success"
+             href="#" id="userDropdown"
+             role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-circle-user me-1"></i>{{ user.username }}
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                <i class="fa-solid fa-user me-2"></i>Profile
+              </a>
             </li>
-          {% endif %}
-        </ul>
-      </div>
+
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+              <a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        {% else %}
+
+        <li class="nav-item ms-lg-3">
+          <a href="{% url 'accounts:login' %}" class="btn btn-outline-success btn-sm me-2 px-3">
+            <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'accounts:register' %}" class="btn btn-success btn-sm px-3">
+            <i class="fa-solid fa-user-plus me-1"></i> Sign Up
+          </a>
+        </li>
+
+        {% endif %}
+      </ul>
     </div>
-  </nav>
-  <!-- ==================== End Navbar ==================== -->
-
-
+  </div>
+</nav>
+<!-- ==================== End Navbar ==================== -->
   <!-- ==================== Page Content ==================== -->
   <main class="flex-grow-1">
     {% block content %}{% endblock %}
@@ -137,7 +174,7 @@
         &copy; {{ now|date:"Y" }} <span class="text-success fw-semibold">Smart Meal Planner</span> — Eat Smart, Live Better
       </div>
       <div>
-        <a href="{% url 'home' %}" class="me-3">Home</a>
+        <a href="{% url 'accounts:home' %}" class="me-3">Home</a>
         <a href="{% url 'meal:quiz' %}" class="me-3">Meal Quiz</a>
         <a href="#">Contact</a>
       </div>

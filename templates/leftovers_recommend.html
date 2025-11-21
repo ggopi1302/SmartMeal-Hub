@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Leftover Recommendations | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Title -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-success">
+      <i class="fas fa-utensils me-2"></i> Meals You Can Cook
+    </h2>
+    <p class="text-muted">Based on your leftover ingredients:</p>
+
+    <!-- Leftovers Display -->
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+      {% for ing in leftovers %}
+        <span class="badge bg-light text-success border rounded-pill px-3 py-2 fw-semibold">
+          <i class="fas fa-leaf me-1"></i>{{ ing }}
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Meal Recommendations -->
+  {% if meals %}
+    <div class="row g-4 mt-4">
+
+      {% for meal in meals %}
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden meal-card">
+
+          <!-- Image -->
+          <img src="{{ meal.image_url }}" class="card-img-top"
+               style="height:200px; object-fit:cover;">
+
+          <div class="card-body d-flex flex-column">
+
+            <!-- Title -->
+            <h5 class="fw-bold">{{ meal.name }}</h5>
+
+            <!-- Category -->
+            <p class="text-muted small mb-2">
+              <i class="fas fa-list me-1 text-success"></i>{{ meal.category }}
+              {% if meal.area %}
+                • <i class="fas fa-globe-americas me-1"></i>{{ meal.area }}
+              {% endif %}
+            </p>
+
+            <!-- Direct Matches -->
+            {% if meal.direct_match_list %}
+            <p class="text-muted small mb-1">
+                <i class="fas fa-check text-success me-1"></i>
+                Direct Matches:
+                <strong>{{ meal.direct_match_list|join:", " }}</strong>
+            </p>
+            {% endif %}
+
+            <!-- Substitution Matches -->
+            {% if meal.substitute_match_list %}
+            <p class="text-muted small mb-2">
+                <i class="fas fa-exchange-alt text-warning me-1"></i>
+                Substitutions:
+            </p>
+
+            <ul class="small text-muted ps-3">
+                {% for sub in meal.substitute_match_list %}
+                <li>{{ sub.leftover }} → <strong>{{ sub.used }}</strong></li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- AI Final Score Badge -->
+            {% if meal.score %}
+              {% if meal.score >= 3 %}
+                <span class="badge bg-success text-white rounded-pill px-3 py-1 mb-2">
+                  <i class="fas fa-fire me-1"></i> Excellent Match ({{ meal.score }})
+                </span>
+              {% elif meal.score >= 1.5 %}
+                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 mb-2">
+                  <i class="fas fa-star me-1"></i> Good Match ({{ meal.score }})
+                </span>
+              {% else %}
+                <span class="badge bg-secondary rounded-pill px-3 py-1 mb-2">
+                  <i class="fas fa-circle me-1"></i> Weak Match ({{ meal.score }})
+                </span>
+              {% endif %}
+            {% endif %}
+
+            <!-- Why This Meal? -->
+            <div class="small text-muted mt-2">
+              <i class="fas fa-info-circle me-1 text-success"></i>
+              Why this meal?
+              <ul class="small text-muted mt-1 mb-2 ps-3">
+                {% if meal.direct_match %}
+                  <li>{{ meal.direct_match }} direct ingredient matches</li>
+                {% endif %}
+                {% if meal.substitute_match %}
+                  <li>{{ meal.substitute_match }} substitution-based matches</li>
+                {% endif %}
+                {% if meal.cooking_time and meal.cooking_time <= 20 %}
+                  <li>Quick recipe (under 20 minutes)</li>
+                {% endif %}
+              </ul>
+            </div>
+
+            <!-- STAR RATING (FIXED VERSION) -->
+            {% if meal.score %}
+            <div class="mt-2 mb-3">
+                {% with star_count=meal.score|floatformat:0 %}
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= star_count %}
+                            <i class="fas fa-star text-warning"></i>
+                        {% else %}
+                            <i class="far fa-star text-warning"></i>
+                        {% endif %}
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            {% endif %}
+
+            <!-- Add to Tracker -->
+            <a href="{% url 'nutrition:add_to_nutrition_log' meal.id %}"
+               class="btn btn-outline-success rounded-pill w-100 mt-auto">
+              <i class="fas fa-plus-circle me-2"></i>Add to Tracker
+            </a>
+
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+    <!-- No Results -->
+    <div class="text-center mt-5">
+      <i class="fas fa-search-minus text-danger fs-1 mb-2"></i>
+      <p class="text-danger fw-semibold">
+        Sorry! No meals match your leftover ingredients.
+      </p>
+      <p class="text-muted">Try adding more ingredients or checking spelling.</p>
+    </div>
+  {% endif %}
+
+</div>
+
+<!-- Styles -->
+<style>
+  .meal-card {
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .meal-card:hover {
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.2);
+  }
+  .badge {
+    font-size: 0.85rem;
+  }
+</style>
+
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Profile | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <h2 class="fw-bold text-success text-center mb-4">
+        <i class="fas fa-user-circle me-2"></i> My Profile
+    </h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="profile-card shadow-lg border-0 rounded-4 p-4">
+
+                <!-- Profile Photo + Name -->
+                <div class="text-center mb-4 profile-header">
+
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" 
+                             class="profile-img shadow"
+                             alt="Profile">
+                    {% else %}
+                        <img src="{% static 'img/default_profile.png' %}" 
+                             class="profile-img shadow"
+                             alt="Profile">
+                    {% endif %}
+
+                    <h4 class="fw-bold text-dark mt-3">{{ user.full_name|default:user.username }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+                </div>
+
+                <hr>
+
+                <!-- Details -->
+                <div class="row mt-4">
+
+                    <!-- Username -->
+                    <div class="col-md-6 mb-3">
+                        <div class="info-box">
+                            <label class="info-label">Username</label>
+                            <p class="info-value">{{ user.username }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Full Name -->
+                    <div class="col-md-6 mb-3">
+                        <div class="info-box">
+                            <label class="info-label">Full Name</label>
+                            <p class="info-value">{{ user.full_name }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="col-md-6 mb-3">
+                        <div class="info-box">
+                            <label class="info-label">Gender</label>
+                            <p class="info-value text-capitalize">{{ user.gender|default:"—" }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Age -->
+                    <div class="col-md-6 mb-3">
+                        <div class="info-box">
+                            <label class="info-label">Age</label>
+                            <p class="info-value">{{ user.age|default:"—" }}</p>
+                        </div>
+                    </div>
+
+                    <!-- University -->
+                    <div class="col-md-6 mb-3">
+                        <div class="info-box">
+                            <label class="info-label">University</label>
+                            <p class="info-value">{{ user.university_name }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Student ID -->
+                    <div class="col-md-6 mb-3">
+                        <div class="info-box">
+                            <label class="info-label">Student ID</label>
+                            <p class="info-value">{{ user.student_id }}</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- STYLING -->
+<style>
+    .profile-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+    .profile-img {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #198754;
+    }
+    .info-box {
+        background: #f8fdf8;
+        border: 1px solid #d8f3d8;
+        padding: 15px;
+        border-radius: 12px;
+        transition: transform 0.2s;
+    }
+    .info-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+    .info-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #198754;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+{% endblock %}

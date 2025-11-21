@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Leftover Management | Smart Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Title Section -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-success">
+      <i class="fas fa-recycle me-2"></i> Leftover Management
+    </h2>
+    <p class="text-muted">Reduce food waste and get smart meal suggestions based on what you already have!</p>
+  </div>
+
+  <!-- Input Card -->
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card p-4 shadow-sm border-0 rounded-4 bg-white">
+
+        <h5 class="fw-bold text-success mb-3">
+          <i class="fas fa-carrot me-2"></i>Enter Your Leftover Ingredients
+        </h5>
+
+        <form method="POST">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Ingredients</label>
+            <textarea 
+              name="leftovers" 
+              rows="4" 
+              class="form-control rounded-4" 
+              placeholder="Example: rice, chicken, tomato, cheese"></textarea>
+          </div>
+
+          <!-- Tip -->
+          <div class="alert alert-light border rounded-4 small text-muted">
+            <i class="fas fa-lightbulb text-warning me-1"></i> 
+            Tip: Add as many ingredients as you want. We will match meals using Hybrid Filtering!
+          </div>
+
+          <button class="btn btn-success w-100 rounded-pill py-2 mt-2">
+            <i class="fas fa-search me-2"></i> Find Meals
+          </button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  textarea.form-control {
+    resize: none;
+    background: #f9fff9;
+    border: 1px solid #d9f2d9;
+  }
+  textarea.form-control:focus {
+    border-color: #198754;
+    box-shadow: 0 0 5px rgba(25,135,84,0.3);
+  }
+  .alert {
+    background: #f8fdf8 !important;
+    border-color: #d8f3d8 !important;
+  }
+</style>
+{% endblock %}
