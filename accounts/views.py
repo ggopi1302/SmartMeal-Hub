@@ -5,12 +5,6 @@ from django.contrib.auth.decorators import login_required
 
 StudentUser = get_user_model()
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-
-StudentUser = get_user_model()
-
 
 def register(request):
     """Handles student registration — only fields in StudentUser model are saved."""
@@ -29,23 +23,23 @@ def register(request):
         # === Validations ===
         if not email.endswith(".edu"):
             messages.error(request, "Please use your university (.edu) email address.")
-            return redirect("register")
+            return redirect("accounts:register")
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
-            return redirect("register")
+            return redirect("accounts:register")
 
         if StudentUser.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
-            return redirect("register")
+            return redirect("accounts:register")
 
         if StudentUser.objects.filter(email=email).exists():
             messages.error(request, "Email already registered.")
-            return redirect("register")
+            return redirect("accounts:register")
 
         if StudentUser.objects.filter(student_id=student_id).exists():
             messages.error(request, "Student ID already registered.")
-            return redirect("register")
+            return redirect("accounts:register")
 
         # Convert age safely
         age_value = int(age) if age else None
@@ -60,7 +54,7 @@ def register(request):
             age=age_value,
             university_name=university_name,
             student_id=student_id,
-            is_verified_university_email=True  # set False if adding email verification later
+            is_verified_university_email=True
         )
 
         # Add profile picture if uploaded
@@ -69,9 +63,10 @@ def register(request):
             user.save()
 
         messages.success(request, "🎉 Account created successfully! You can now log in.")
-        return redirect("login")
+        return redirect("accounts:login")
 
     return render(request, "register.html")
+
 
 def login_view(request):
     """Handles student login using username and password."""
@@ -83,10 +78,10 @@ def login_view(request):
         if user is not None:
             auth_login(request, user)
             messages.success(request, f"Welcome back, {user.full_name or user.username}!")
-            return redirect("home")  # redirect to your homepage/dashboard
+            return redirect("accounts:home")
         else:
             messages.error(request, "Invalid username or password.")
-            return redirect("login")
+            return redirect("accounts:login")
 
     return render(request, "login.html")
 
@@ -95,10 +90,21 @@ def logout_view(request):
     """Logs out the user."""
     auth_logout(request)
     messages.success(request, "You have been logged out successfully.")
-    return redirect("login")
+    return redirect("accounts:login")
 
 
 @login_required
 def index(request):
     """Home page view."""
     return render(request, "index.html")
+
+
+@login_required
+def profile_view(request):
+    """Display logged-in student's profile information."""
+    user = request.user
+
+    context = {
+        "user": user,
+    }
+    return render(request, "profile.html", context)
